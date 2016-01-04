@@ -33,6 +33,17 @@ gpgkey=https://yum.dockerproject.org/gpg
 EOF
 }
 
+prepare_docker_images(){
+    docker build -t atomsd/atomsd-centos7-jenkins:latest $(get_full_path ./)/centos7/jenkins
+    docker build -t atomsd/atomsd-centos6-jenkins:latest $(get_full_path ./)/centos6/jenkins
+
+    # Remove all stopped containers
+    docker rm $(docker ps -a -q)
+    
+    # Remove all untagged images
+    docker rmi $(docker images | grep "^<none>" | awk "{print $3}")
+}
+
 main(){
     is_root_user
     add_yum_remo
@@ -40,6 +51,8 @@ main(){
     yum -y update
     yum -y install docker-engine
     systemctl start docker
+
+    prepare_docker_images
 }
 
 umask 0022
