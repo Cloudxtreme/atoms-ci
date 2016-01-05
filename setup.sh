@@ -34,8 +34,8 @@ EOF
 }
 
 prepare_docker_images(){
-    docker build -t atomsd/atomsd-centos7-jenkins:latest $(get_full_path ./)/centos7/jenkins
-    docker build -t atomsd/atomsd-centos6-jenkins:latest $(get_full_path ./)/centos6/jenkins
+    docker build -t atomsd-centos7-jenkins:latest $(get_full_path ./)/centos7/jenkins
+    docker build -t atomsd-centos6-jenkins:latest $(get_full_path ./)/centos6/jenkins
 
     # Remove all stopped containers
     docker rm $(docker ps -a -q)
