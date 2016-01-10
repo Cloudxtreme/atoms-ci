@@ -34,14 +34,39 @@ EOF
 }
 
 prepare_docker_images(){
-    docker build -t atomsd-centos7-jenkins:latest $(get_full_path ./)/centos7/jenkins
-    docker build -t atomsd-centos6-jenkins:latest $(get_full_path ./)/centos6/jenkins
+    docker build -t atomsd/jenkins-build:centos7 $(get_full_path ./)/centos7/jenkins
+    docker build -t atomsd/jenkins-build:centos6 $(get_full_path ./)/centos6/jenkins
+    
+    # Stop all containers
+    docker stop $(docker ps -a -q)
 
     # Remove all stopped containers
     docker rm $(docker ps -a -q)
     
     # Remove all untagged images
     docker rmi $(docker images -q -f dangling=true)
+
+    CID_CENTOS7=$(docker run -h centos7-jenkins  -d atomsd/jenkins-build:centos7)
+    CID_CENTOS6=$(docker run -h centos6-jenkins  -d atomsd/jenkins-build:centos6)
+
+    IP_CENTOS7=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${CID_CENTOS7})
+    IP_CENTOS6=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${CID_CENTOS6})
+
+    add_host "centos7-jenkins" ${IP_CENTOS7}
+    add_host "centos6-jenkins" ${IP_CENTOS6}
+
+    rm -rf /root/.ssh/known_hosts
+}
+
+add_host(){
+    host_name=$1
+    new_ip=$2
+
+    # Remove previous host name
+    sed "/$host_name/d" /etc/hosts > /etc/hosts.tmp
+    cp -f /etc/hosts.tmp /etc/hosts
+
+    echo "${new_ip}    $host_name" >> /etc/hosts
 }
 
 main(){
