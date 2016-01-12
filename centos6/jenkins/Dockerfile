@@ -7,8 +7,10 @@ RUN yum update -y && yum install -y autoconf \
         gcc \
         gcc-c++ \
         java-1.7.0-openjdk \
+	java-1.7.0-openjdk-devel \
         kernel-devel \
         libffi-devel \
+	net-tools \
 	make \
         openssh-server \
 	openssl-devel \
@@ -18,22 +20,13 @@ RUN yum update -y && yum install -y autoconf \
         rubygems \
 	readline-devel \
         tar \
+	which \
         zlib-devel
-RUN curl http://apache.spd.co.il/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz | tar xz -C /usr/local
-RUN ln -s /usr/local/apache-maven-3.3.9 /usr/local/maven
 
 # Add jenkins user
 RUN useradd -ms /bin/bash jenkins
 RUN echo "jenkins:jenkins" | chpasswd
 RUN echo "root:jenkins" | chpasswd
-
-# Install ruby 
-RUN git clone git://github.com/sstephenson/rbenv.git /home/jenkins/.rbenv
-RUN echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> /home/jenkins/.bashrc
-RUN echo 'eval "$(/home/jenkins/.rbenv/bin/rbenv init -)"' >> /home/jenkins/.bashrc
-RUN git clone git://github.com/sstephenson/ruby-build.git /home/jenkins/.rbenv/plugins/ruby-build
-RUN echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' >> /home/jenkins/.bashrc
-RUN chown -R jenkins:jenkins /home/jenkins/.rbenv
 
 # Set up SSH
 RUN mkdir /var/run/sshd && mkdir /var/log/ssh
@@ -52,10 +45,32 @@ RUN chmod 600 /etc/ssh/ssh_host_ecdsa_key && chmod 644 /etc/ssh/ssh_host_ecdsa_k
 RUN sed -i 's|session    required     pam_loginuid.so|session    optional     pam_loginuid.so|g' /etc/pam.d/sshd
 RUN sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config && sed -ri 's/#UsePAM no/UsePAM no/g' /etc/ssh/sshd_config
 
+# Install Maven
+RUN curl http://apache.spd.co.il/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz | tar xz -C /usr/local
+RUN ln -s /usr/local/apache-maven-3.3.9 /usr/local/maven
+RUN echo 'export M2_HOME=/usr/local/maven' >> /home/jenkins/.bashrc
+RUN echo 'export M2="$M2_HOME/bin"' >> /home/jenkins/.bashrc
+RUN echo 'PATH="$M2:$PATH"' >> /home/jenkins/.bashrc
+
+# Install ruby
+RUN git clone git://github.com/sstephenson/rbenv.git /home/jenkins/.rbenv
+RUN echo 'export PATH="/home/jenkins/.rbenv/bin:$PATH"' >> /home/jenkins/.bashrc
+RUN echo 'eval "$(/home/jenkins/.rbenv/bin/rbenv init -)"' >> /home/jenkins/.bashrc
+RUN git clone git://github.com/sstephenson/ruby-build.git /home/jenkins/.rbenv/plugins/ruby-build
+RUN echo 'export PATH="/home/jenkins/.rbenv/plugins/ruby-build/bin:$PATH"' >> /home/jenkins/.bashrc
+ENV RBENV_ROOT /home/jenkins/.rbenv/
+ENV PATH "$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH"
+RUN rbenv install 2.2.3
+RUN chown -R jenkins:jenkins /home/jenkins/.rbenv
+
 # Add atoms build dirs
 RUN mkdir -p /opt/atoms /var/cache/omnibus
 RUN chown -R jenkins:jenkins /opt/atoms
 RUN chown -R jenkins:jenkins /var/cache/omnibus
+
+# Set git config 
+RUN git config --global user.email "support@atomsd.org"
+RUN git config --global user.name "atomsd"
 
 # Standard SSH port
 EXPOSE 22

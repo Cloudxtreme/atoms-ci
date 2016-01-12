@@ -34,8 +34,11 @@ EOF
 }
 
 prepare_docker_images(){
-    docker build -t atomsd/jenkins-build:centos7 $(get_full_path ./)/centos7/jenkins
-    docker build -t atomsd/jenkins-build:centos6 $(get_full_path ./)/centos6/jenkins
+
+    if [ -n "${REBUILD_IMAGES}" ]; then
+        docker build -t atomsd/jenkins-build:centos7 $(get_full_path ./)/centos7/jenkins
+        docker build -t atomsd/jenkins-build:centos6 $(get_full_path ./)/centos6/jenkins
+    fi
     
     # Stop all containers
     docker stop $(docker ps -a -q)
@@ -79,6 +82,23 @@ main(){
 
     prepare_docker_images
 }
+
+
+while [ -n "$1" ]; do
+    v="${1#*=}"
+    case "$1" in
+        --rebuild)
+            REBUILD_IMAGES=1
+            ;;
+        --help|*)
+                cat <<__EOF__
+Usage: $0
+        --rebuild  - Rebuild docker images.
+__EOF__
+        exit 1
+    esac
+    shift
+done
 
 umask 0022
 main
