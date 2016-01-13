@@ -1,0 +1,6 @@
+cd /tmp
+openssl s_client -connect ci.atomsd.org.:443 -showcerts </dev/null 2>/dev/null|openssl x509 -outform PEM > ci.atomsd.org.pem
+sudo keytool -import -alias "ci.atomsd.org" -file ci.atomsd.org.pem -keystore /etc/pki/java/cacerts
+
+password storeit
+
