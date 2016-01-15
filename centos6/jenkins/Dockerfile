@@ -3,6 +3,7 @@ MAINTAINER AtomSD <support@atomsd.org>
 RUN yum update -y && yum install -y autoconf \
         bzip2 \
         curl \
+        fakeroot \
         git \
         gcc \
         gcc-c++ \
@@ -19,6 +20,7 @@ RUN yum update -y && yum install -y autoconf \
         ruby-devel \
         rubygems \
 	readline-devel \
+	rpm-build \
         tar \
 	which \
         zlib-devel
