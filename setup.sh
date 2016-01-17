@@ -49,8 +49,8 @@ prepare_docker_images(){
     # Remove all untagged images
     docker rmi $(docker images -q -f dangling=true)
 
-    CID_CENTOS7=$(docker run -h centos7-jenkins  -d atomsd/jenkins-build:centos7)
-    CID_CENTOS6=$(docker run -h centos6-jenkins  -d atomsd/jenkins-build:centos6)
+    CID_CENTOS7=$(docker run -h centos7-jenkins -d -v /usr/share/nginx/html/ci/:/home/jenkins/ci atomsd/jenkins-build:centos7)
+    CID_CENTOS6=$(docker run -h centos6-jenkins -d -v /usr/share/nginx/html/ci/:/home/jenkins/ci atomsd/jenkins-build:centos6)
 
     IP_CENTOS7=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${CID_CENTOS7})
     IP_CENTOS6=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${CID_CENTOS6})

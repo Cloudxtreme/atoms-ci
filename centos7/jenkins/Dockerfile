@@ -73,8 +73,15 @@ RUN chown -R jenkins:jenkins /opt/atoms
 RUN chown -R jenkins:jenkins /var/cache/omnibus
 
 # Set git config 
+USER jenkins
 RUN git config --global user.email "support@atomsd.org"
 RUN git config --global user.name "atomsd"
+USER root
+
+# Set system to UTF-8
+RUN echo 'export LANG=en_US.UTF-8' >> /home/jenkins/.bashrc
+RUN echo 'export LANGUAGE=en_US.UTF-8' >> /home/jenkins/.bashrc
+RUN echo 'export LC_ALL=en_US.UTF-8' >> /home/jenkins/.bashrc
 
 # Standard SSH port
 EXPOSE 22
