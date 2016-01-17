@@ -36,12 +36,11 @@ EOF
 prepare_docker_images(){
 
     if [ -n "${REBUILD_IMAGES}" ]; then
-        docker build -t atomsd/jenkins-build:centos7 $(get_full_path ./)/centos7/jenkins
-        docker build -t atomsd/jenkins-build:centos6 $(get_full_path ./)/centos6/jenkins
+        docker build -t "${DOCKER_NAME}" "${DOCKER_FILE}"
     fi
     
     # Stop all containers
-    docker stop $(docker ps -a -q)
+    docker stop "${DOCKER_HOST}"
 
     # Remove all stopped containers
     docker rm $(docker ps -a -q)
@@ -49,14 +48,10 @@ prepare_docker_images(){
     # Remove all untagged images
     docker rmi $(docker images -q -f dangling=true)
 
-    CID_CENTOS7=$(docker run -h centos7-jenkins -d -v /usr/share/nginx/html/ci/:/home/jenkins/ci atomsd/jenkins-build:centos7)
-    CID_CENTOS6=$(docker run -h centos6-jenkins -d -v /usr/share/nginx/html/ci/:/home/jenkins/ci atomsd/jenkins-build:centos6)
+    DOCKER_CID=$(docker run -h $DOCKER_HOST -d -v /usr/share/nginx/html/ci/:/home/jenkins/ci --name="$DOCKER_HOST" "$DOCKER_NAME")
+    DOCKER_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${DOCKER_CID})
 
-    IP_CENTOS7=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${CID_CENTOS7})
-    IP_CENTOS6=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${CID_CENTOS6})
-
-    add_host "centos7-jenkins" ${IP_CENTOS7}
-    add_host "centos6-jenkins" ${IP_CENTOS6}
+    add_host "${DOCKER_HOST}" ${DOCKER_IP}
 
     rm -rf /root/.ssh/known_hosts
 }
@@ -87,18 +82,35 @@ main(){
 while [ -n "$1" ]; do
     v="${1#*=}"
     case "$1" in
+        --name=*)
+            DOCKER_NAME="${v}"
+            ;;
+        --file=*)
+            DOCKER_FILE="${v}"
+            ;;
+        --host=*)
+            DOCKER_HOST="${v}"
+            ;;
         --rebuild)
             REBUILD_IMAGES=1
             ;;
         --help|*)
                 cat <<__EOF__
 Usage: $0
-        --rebuild  - Rebuild docker images.
+	--name     - Docker image name.
+	--file     - Docker image config file.
+	--host     - Docker image host.
+        --rebuild  - Reabuild docker images.
 __EOF__
         exit 1
     esac
     shift
 done
+
+[ -n "${DOCKER_NAME}" ] || die "Please specify docker name"
+[ -n "${DOCKER_FILE}" ] || die "Please specify docker config file path"
+[ -n "${DOCKER_HOST}" ] || die "Please specify docker host"
+
 
 umask 0022
 main

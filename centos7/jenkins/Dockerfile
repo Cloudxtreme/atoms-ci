@@ -3,7 +3,7 @@ MAINTAINER AtomSD <support@atomsd.org>
 RUN yum update -y && yum install -y autoconf \
 	bzip2 \
 	curl \
-	fakeroot \
+	epel-release \
 	git \
 	gcc \
         gcc-c++ \
@@ -23,7 +23,7 @@ RUN yum update -y && yum install -y autoconf \
 	rpm-build \
 	tar \
 	which \
-	zlib-devel
+	zlib-devel && yum install -y fakeroot
 
 # Add jenkins user
 RUN useradd -ms /bin/bash jenkins
