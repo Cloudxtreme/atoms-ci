@@ -1,8 +1,10 @@
 FROM centos:6
 MAINTAINER AtomSD <support@atomsd.org>
 RUN yum update -y && yum install -y java-1.7.0-openjdk \
+	net-tools \
         openssh-server \
-        openssl-devel
+        openssl-devel \
+	tar
 
 # Add jenkins user
 RUN useradd -ms /bin/bash jenkins
@@ -26,6 +28,8 @@ RUN chmod 600 /etc/ssh/ssh_host_ecdsa_key && chmod 644 /etc/ssh/ssh_host_ecdsa_k
 RUN sed -i 's|session    required     pam_loginuid.so|session    optional     pam_loginuid.so|g' /etc/pam.d/sshd
 RUN sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config && sed -ri 's/#UsePAM no/UsePAM no/g' /etc/ssh/sshd_config
 
+RUN chkconfig sshd on
+
 # Standard SSH port
 EXPOSE 22
-CMD ["/usr/sbin/sshd", "-D"]
+CMD ["/sbin/init"]
