@@ -1,6 +1,8 @@
 FROM centos:6
 MAINTAINER AtomSD <support@atomsd.org>
-RUN yum update -y && yum install -y java-1.7.0-openjdk
+RUN yum update -y && yum install -y java-1.7.0-openjdk \
+        openssh-server \
+        openssl-devel
 
 # Add jenkins user
 RUN useradd -ms /bin/bash jenkins

@@ -48,7 +48,12 @@ prepare_docker_images(){
     # Remove all untagged images
     docker rmi $(docker images -q -f dangling=true)
 
-    DOCKER_CID=$(docker run -h $DOCKER_HOST -d -v /usr/share/nginx/html/ci/:/home/jenkins/ci --name="$DOCKER_HOST" "$DOCKER_NAME")
+    if [ -n "${PRIVILEGED}" ]; then
+	DOCKER_CID=$(docker run --privileged -h $DOCKER_HOST -d -v /usr/share/nginx/html/ci/:/home/jenkins/ci --name="$DOCKER_HOST" "$DOCKER_NAME")
+    else 
+	DOCKER_CID=$(docker run -h $DOCKER_HOST -d -v /usr/share/nginx/html/ci/:/home/jenkins/ci --name="$DOCKER_HOST" "$DOCKER_NAME")
+    fi
+
     DOCKER_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${DOCKER_CID})
 
     add_host "${DOCKER_HOST}" ${DOCKER_IP}
@@ -91,16 +96,20 @@ while [ -n "$1" ]; do
         --host=*)
             DOCKER_HOST="${v}"
             ;;
+        --privileged)
+            PRIVILEGED=1
+	    ;;
         --rebuild)
             REBUILD_IMAGES=1
             ;;
         --help|*)
                 cat <<__EOF__
 Usage: $0
-	--name     - Docker image name.
-	--file     - Docker image config file.
-	--host     - Docker image host.
-        --rebuild  - Reabuild docker images.
+	--name       - Docker image name.
+	--file       - Docker image config file.
+	--host       - Docker image host.
+	--privileged - Run Docker image with --privileged
+        --rebuild    - Reabuild docker images.
 __EOF__
         exit 1
     esac
