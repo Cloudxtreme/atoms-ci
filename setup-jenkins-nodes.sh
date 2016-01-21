@@ -32,9 +32,9 @@ done
 SCRIPT_PATH="$(get_full_path ./)"
 
 if [ -n "${REBUILD_IMAGES}" ]; then
-  (${SCRIPT_PATH}/setup.sh --name="atomsd/jenkins-build:centos7" --file="${SCRIPT_PATH}/centos7/jenkins" --host=centos7-jenkins --rebuild) 
-  (${SCRIPT_PATH}/setup.sh --name="atomsd/jenkins-build:centos6" --file="${SCRIPT_PATH}/centos6/jenkins" --host=centos6-jenkins --rebuild)
-else 
-  (${SCRIPT_PATH}/setup.sh --name="atomsd/jenkins-build:centos7" --file="${SCRIPT_PATH}/centos7/jenkins" --host=centos7-jenkins)     
-  (${SCRIPT_PATH}/setup.sh --name="atomsd/jenkins-build:centos6" --file="${SCRIPT_PATH}/centos6/jenkins" --host=centos6-jenkins)
+    REBUILD_STR="--rebuild"
 fi 
+
+${SCRIPT_PATH}/setup.sh --name="atomsd/jenkins-build:centos6" --file="${SCRIPT_PATH}/centos6/jenkins" --host=centos6-jenkins ${REBUILD_STR}
+${SCRIPT_PATH}/setup.sh --name="atomsd/jenkins-build:centos7" --file="${SCRIPT_PATH}/centos7/jenkins" --host=centos7-jenkins ${REBUILD_STR}
+
