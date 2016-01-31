@@ -81,8 +81,8 @@ main(){
     is_root_user
     add_yum_remo
 
-    yum -y update
-    yum -y install docker-engine
+    # yum -y update
+    # yum -y install docker-engine
     systemctl start docker
 
     prepare_docker_images
