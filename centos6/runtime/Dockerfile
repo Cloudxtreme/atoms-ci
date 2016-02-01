@@ -31,5 +31,5 @@ RUN sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config && sed -ri 's/#Use
 RUN chkconfig sshd on
 
 # Standard SSH port
-EXPOSE 22
+EXPOSE 22 80 443
 CMD ["/sbin/init"]

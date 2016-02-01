@@ -44,5 +44,5 @@ VOLUME [ "/sys/fs/cgroup" ]
 RUN systemctl enable sshd.service
 
 # Standard SSH port
-EXPOSE 22
+EXPOSE 22 80 443
 CMD ["/usr/sbin/init"]
