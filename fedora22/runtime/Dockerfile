@@ -1,6 +1,6 @@
 FROM fedora:22
 MAINTAINER AtomSD <support@atomsd.org>
-RUN yum update -y && yum install -y java-1.7.0-openjdk \
+RUN dnf update -y && dnf install -y java-1.8.0-openjdk \
 	net-tools \
         openssh-server \
         openssl-devel \

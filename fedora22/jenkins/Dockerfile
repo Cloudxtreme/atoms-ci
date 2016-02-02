@@ -3,7 +3,6 @@ MAINTAINER AtomSD <support@atomsd.org>
 RUN dnf update -y && dnf install -y autoconf \
 	bzip2 \
 	curl \
-	epel-release \
 	git \
 	gcc \
         gcc-c++ \
@@ -23,7 +22,7 @@ RUN dnf update -y && dnf install -y autoconf \
 	rpm-build \
 	tar \
 	which \
-	zlib-devel && yum install -y fakeroot
+	zlib-devel && dnf install -y fakeroot
 
 # Add jenkins user
 RUN useradd -ms /bin/bash jenkins
