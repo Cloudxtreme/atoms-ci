@@ -44,3 +44,5 @@ cp nginx-docker.tmpl /etc/nginx/conf.d/docker-centos7-runtime.conf
 
 sed -i -e s/SUB_DOMAIN/centos6-runtime/g /etc/nginx/conf.d/docker-centos6-runtime.conf
 sed -i -e s/SUB_DOMAIN/centos7-runtime/g /etc/nginx/conf.d/docker-centos7-runtime.conf
+
+systemctl restart nginx

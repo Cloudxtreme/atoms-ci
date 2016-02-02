@@ -5,7 +5,7 @@ server {
     #charset koi8-r;
     #access_log  /var/log/nginx/log/host.access.log  main;
 
-    # Artifactory is also available using http to allow omnibus localhost requests
+    # Atoms requests
     location /atoms {
       proxy_redirect off;
       ## If you use HTTPS make sure you disable gzip compression
@@ -27,6 +27,30 @@ server {
       proxy_pass http://SUB_DOMAIN/atoms;
       proxy_pass_header Server;
     }
+
+    # Auth requests 
+    location /auth {
+      proxy_redirect off;
+      ## If you use HTTPS make sure you disable gzip compression
+      ## to be safe against BREACH attack.
+      gzip off;
+
+      ## Some requests take more than 30 seconds.
+      proxy_read_timeout      300;
+      proxy_connect_timeout   300;
+      proxy_redirect          off;
+
+      proxy_set_header    Host                $http_host;
+      proxy_set_header    X-Real-IP           $remote_addr;
+      proxy_set_header    X-Forwarded-Ssl     on;
+      proxy_set_header    X-Forwarded-For     $proxy_add_x_forwarded_for;
+      proxy_set_header    X-Forwarded-Proto   $scheme;
+      proxy_set_header    X-Frame-Options     SAMEORIGIN;
+
+      proxy_pass http://SUB_DOMAIN/auth;
+      proxy_pass_header Server;
+    }
+
 
     location / {
         root   /usr/share/nginx/html/SUB_DOMAIN.ci.atomsd.org;
