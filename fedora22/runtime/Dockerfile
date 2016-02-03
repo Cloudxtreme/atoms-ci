@@ -1,10 +1,13 @@
 FROM fedora:22
 MAINTAINER AtomSD <support@atomsd.org>
-RUN dnf update -y && dnf install -y java-1.8.0-openjdk \
+RUN dnf update -y && dnf install -y hostname \
+ 	java-1.8.0-openjdk \
 	net-tools \
         openssh-server \
         openssl-devel \
-	systemd
+	procps \
+	systemd \
+	tar
 
 # Add jenkins user
 RUN useradd -ms /bin/bash jenkins
