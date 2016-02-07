@@ -65,15 +65,14 @@ RUN git config --global user.email "support@atomsd.org"
 RUN git config --global user.name "atomsd"
 USER root
 
-# Set system to UTF-8
-RUN echo 'export LANG=en_US.UTF-8' >> /home/jenkins/.bash_profile
-RUN echo 'export LANGUAGE=en_US.UTF-8' >> /home/jenkins/.bash_profile
-RUN echo 'export LC_ALL=en_US.UTF-8' >> /home/jenkins/.bashrc_profile
-
 # Fix locale issues
 RUN apt-get install -y locales
-RUN locale-gen en_US.UTF-8
-RUN DEBIAN_FRONTEND=noninteractive dpkg-reconfigure locales
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN dpkg-reconfigure locales && \
+    locale-gen C.UTF-8 && \
+    /usr/sbin/update-locale LANG=C.UTF-8
+ENV LC_ALL C.UTF-8
 
 # Standard SSH port
 EXPOSE 22
