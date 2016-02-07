@@ -37,6 +37,7 @@ fi
 
 ${SCRIPT_PATH}/setup.sh --name="atomsd/jenkins-build:centos6" --file="${SCRIPT_PATH}/centos6/jenkins" --host=centos6-jenkins ${REBUILD_STR}
 ${SCRIPT_PATH}/setup.sh --name="atomsd/jenkins-build:centos7" --file="${SCRIPT_PATH}/centos7/jenkins" --host=centos7-jenkins ${REBUILD_STR}
-${SCRIPT_PATH}/setup.sh --name="atomsd/jenkins-build:fedora22" --file="${SCRIPT_PATH}/fedora22/jenkins" --host=fedora22-jenkins ${REBUILD_STR}
+#${SCRIPT_PATH}/setup.sh --name="atomsd/jenkins-build:fedora22" --file="${SCRIPT_PATH}/fedora22/jenkins" --host=fedora22-jenkins ${REBUILD_STR}
 ${SCRIPT_PATH}/setup.sh --name="atomsd/jenkins-build:ubuntu14" --file="${SCRIPT_PATH}/ubuntu14/jenkins" --host=ubuntu14-jenkins ${REBUILD_STR}
 ${SCRIPT_PATH}/setup.sh --name="atomsd/jenkins-build:ubuntu15" --file="${SCRIPT_PATH}/ubuntu15/jenkins" --host=ubuntu15-jenkins ${REBUILD_STR}
+${SCRIPT_PATH}/setup.sh --name="atomsd/jenkins-build:debian8" --file="${SCRIPT_PATH}/debian8/jenkins" --host=debian8-jenkins ${REBUILD_STR}
