@@ -10,7 +10,7 @@ RUN apt-get update -q \
       nano \
       openjdk-7-jre \
       openssh-server \
-      vim
+      vim 
 
 # Change root password
 RUN echo "root:jenkins" | chpasswd
@@ -31,6 +31,22 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN locale-gen en_US.UTF-8
 RUN dpkg-reconfigure locales
 
+# Setup systemd
+RUN cd /lib/systemd/system/sysinit.target.wants/; ls | grep -v systemd-tmpfiles-setup | xargs rm -f $1 \
+rm -f /lib/systemd/system/multi-user.target.wants/*;\
+rm -f /etc/systemd/system/*.wants/*;\
+rm -f /lib/systemd/system/local-fs.target.wants/*; \
+rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
+rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
+rm -f /lib/systemd/system/basic.target.wants/*;\
+rm -f /lib/systemd/system/anaconda.target.wants/*; \
+rm -f /lib/systemd/system/plymouth*; \
+rm -f /lib/systemd/system/systemd-update-utmp*;
+RUN systemctl set-default multi-user.target
+ENV init /lib/systemd/systemd
+ENTRYPOINT ["/lib/systemd/systemd"]
+
+RUN systemctl enable ssh
+
 # Standard SSH port
 EXPOSE 22 80 443
-CMD ["/usr/sbin/sshd", "-D"]
