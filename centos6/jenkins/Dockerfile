@@ -7,14 +7,17 @@ RUN yum update -y && yum install -y autoconf \
         git \
         gcc \
         gcc-c++ \
+	gettext \
         java-1.7.0-openjdk \
 	java-1.7.0-openjdk-devel \
         kernel-devel \
         libffi-devel \
+	lib-devel \
 	net-tools \
 	make \
         openssh-server \
 	openssl-devel \
+	perl-CPAN \
         patch \
         ruby \
         ruby-devel \
@@ -69,6 +72,13 @@ RUN chown -R jenkins:jenkins /home/jenkins/.rbenv
 RUN mkdir -p /opt/atoms /var/cache/omnibus
 RUN chown -R jenkins:jenkins /opt/atoms
 RUN chown -R jenkins:jenkins /var/cache/omnibus
+
+# Update GIT to a newer version then cetnos6 reo
+RUN yum install -y curl-devel expat-devel
+RUN curl https://git-core.googlecode.com/files/git-1.8.5.3.tar.gz | tar xz -C /usr
+RUN /usr/git-1.8.5.3/configure
+RUN cd /usr/git-1.8.5.3/ && make
+RUN cd /usr/git-1.8.5.3/ && make prefix=/usr install
 
 # Set git config 
 RUN git config --global user.email "support@atomsd.org"
