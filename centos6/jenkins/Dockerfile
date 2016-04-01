@@ -80,9 +80,11 @@ RUN /usr/git-1.8.5.3/configure
 RUN cd /usr/git-1.8.5.3/ && make
 RUN cd /usr/git-1.8.5.3/ && make prefix=/usr install
 
-# Set git config 
+# Set git config
+USER jenkins
 RUN git config --global user.email "support@atomsd.org"
 RUN git config --global user.name "atomsd"
+USER root
 
 # Standard SSH port
 EXPOSE 22
